@@ -20,7 +20,6 @@ find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIRS})
 
 #--- Nanoflann
-find_package(NanoFlann REQUIRED)
 include_directories(${NANOFLANN_INCLUDE_DIR})
 
 #--- Build example
