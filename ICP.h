@@ -101,10 +101,10 @@ namespace RigidMotionEstimator {
             transformation.linear().noalias() = svd.matrixV()*svd.matrixU().transpose();
         }
         transformation.translation().noalias() = Y_mean - transformation.linear()*X_mean;
-        /// Apply transformation
-        X = transformation*X;
         /// Re-apply mean
         X.colwise() += X_mean;
+        /// Apply transformation
+        X = transformation*X;
         Y.colwise() += Y_mean;
         /// Return transformation
         return transformation;
