@@ -65,36 +65,38 @@ bool read_obj(MatrixType& vertices, const std::string& filename) {
 
 ///--- Replaces vertices in prev_filename with content of vertices, saves in filename
 template <class MatrixType>
-bool write_obj_replaceverts(const std::string& prev_filename, const MatrixType& vertices, const std::string& filename) {
-    typedef Eigen::Vector3d Texture_coordinate;
-
+bool
+write_obj_replaceverts(const std::string& prev_filename,
+                       const MatrixType& vertices,
+                       const std::string& filename)
+{
     char   s[200];
-    float  x, y, z;
-    
-
     FILE* out = fopen(filename.c_str(), "w");
     FILE* in = fopen(prev_filename.c_str(), "r");
-    if (!in || !out)
-        return false;
+    if (!in || !out) {
+      return false;
+    }
 
     // clear line once
     memset(&s, 0, 200);
-    
+
     //--- Second pass, fills in
     int curr_vertex=0;
     while (in && !feof(in) && fgets(s, 200, in)) {
         // vertex
         if (!isspace(s[0]) && strncmp(s, "v ", 2) == 0) {
-            fprintf(out, "v %f %f %f\n", vertices(0,curr_vertex), vertices(1,curr_vertex), vertices(2,curr_vertex));
-            curr_vertex++;
-        } else {
-            fprintf(out, "%s", s);            
+          fprintf(out, "v %f %f %f\n", vertices(0,curr_vertex),
+                                       vertices(1,curr_vertex),
+                                       vertices(2,curr_vertex));
+          curr_vertex++;
         }
-        
+        else {
+            fprintf(out, "%s", s);
+        }
+
         // clear line
         memset(&s, 0, 200);
     }
-
 
     fclose(in);
     fclose(out);
