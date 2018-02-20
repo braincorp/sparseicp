@@ -209,7 +209,7 @@ namespace SICP {
         int max_outer = 100;      /// max outer iteration
         int max_inner = 1;        /// max inner iteration. If max_inner=1 then ADMM else ALM
         double stop = 1e-5;       /// stopping criteria
-        bool print_icpn = false;  /// (debug) print ICP iteration 
+        bool print_icpn = false;  /// (debug) print ICP iteration
     };
     /// Shrinkage operator (Automatic loop unrolling using template)
     template<unsigned int I>
@@ -282,7 +282,11 @@ namespace SICP {
                     /// Stopping criteria
                     dual = (X-Xo1).colwise().norm().maxCoeff();
                     Xo1 = X;
-                    if(dual < par.stop) break;
+                    if (dual < par.stop) {
+                      std::cerr << "Reached Stop Condition: "
+                                << dual << std::endl;
+                      break;
+                    }
                 }
                 /// C update (lagrange multipliers)
                 Eigen::Matrix3Xd P = X-Q-Z;
@@ -321,7 +325,7 @@ namespace SICP {
         /// ICP
         for(int icp=0; icp<par.max_icp; ++icp) {
             if(par.print_icpn) std::cout << "Iteration #" << icp << "/" << par.max_icp << std::endl;
-            
+
             /// Find closest point
             #pragma omp parallel for
             for(int i=0; i<X.cols(); ++i) {
