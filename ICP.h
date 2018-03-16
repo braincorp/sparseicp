@@ -300,7 +300,10 @@ namespace SICP {
             /// Stopping criteria
             double stop = (X-Xo2).colwise().norm().maxCoeff();
             Xo2 = X;
-            if(stop < par.stop) break;
+            if(stop < par.stop) {
+              std::cerr << "Reached Stop Condition: " << stop << std::endl;
+              break;
+            }
         }
     }
     /// Sparse ICP with point to plane
@@ -490,12 +493,18 @@ namespace ICP {
                 /// Stopping criteria
                 double stop1 = (X-Xo1).colwise().norm().maxCoeff();
                 Xo1 = X;
-                if(stop1 < par.stop) break;
+                if(stop1 < par.stop) {
+                  std::cerr << "Reached Stop Condition: " << stop1 << std::endl;
+                  break;
+                }
             }
             /// Stopping criteria
             double stop2 = (X-Xo2).colwise().norm().maxCoeff();
             Xo2 = X;
-            if(stop2 < par.stop) break;
+            if(stop2 < par.stop) {
+              std::cerr << "Reached Stop Condition: " << stop2 << std::endl;
+              break;
+            }
         }
     }
     /// Reweighted ICP with point to plane
