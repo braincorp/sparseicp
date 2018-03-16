@@ -4,7 +4,7 @@
 
 template <class MatrixType>
 bool read_obj(MatrixType& vertices, const std::string& filename) {
-    char   s[200];
+    char s[200];
     float  x, y, z;
 
     // open file (in ASCII mode)
@@ -12,7 +12,7 @@ bool read_obj(MatrixType& vertices, const std::string& filename) {
     if (!in) return false;
 
     // clear line once
-    memset(&s, 0, 200);
+    memset(s, 0, 200);
 
     //--- First pass, counts vertices
     int n_vertices = 0;
@@ -54,7 +54,7 @@ bool read_obj(MatrixType& vertices, const std::string& filename) {
         }
 
         // clear line
-        memset(&s, 0, 200);
+        memset(s, 0, 200);
     }
 
     fclose(in);
@@ -78,7 +78,7 @@ write_obj_replaceverts(const std::string& prev_filename,
     }
 
     // clear line once
-    memset(&s, 0, 200);
+    memset(s, 0, 200);
 
     //--- Second pass, fills in
     int curr_vertex=0;
@@ -95,7 +95,7 @@ write_obj_replaceverts(const std::string& prev_filename,
         }
 
         // clear line
-        memset(&s, 0, 200);
+        memset(s, 0, 200);
     }
 
     fclose(in);
