@@ -1,9 +1,24 @@
 ///--- hacked from OpenGP obj reader
+#include <sys/stat.h>
 #include <cstdio>
 #include <Eigen/Dense>
 
+inline bool
+exists(const std::string& name)
+{
+  struct stat buffer;
+  return (stat (name.c_str(), &buffer) == 0);
+}
+
+
 template <class MatrixType>
 bool read_obj(MatrixType& vertices, const std::string& filename) {
+
+  if (!exists(filename)) {
+    std::stringstream ss;
+    ss << "Path does not exist: " << filename;
+    throw std::runtime_error(ss.str());
+  }
     char s[200];
     float  x, y, z;
 
@@ -70,6 +85,17 @@ write_obj_replaceverts(const std::string& prev_filename,
                        const MatrixType& vertices,
                        const std::string& filename)
 {
+  if (!exists(prev_filename)) {
+    std::stringstream ss;
+    ss << "Path does not exist: " << prev_filename;
+    throw std::runtime_error(ss.str());
+  }
+
+  if (!exists(filename)) {
+    std::stringstream ss;
+    ss << "Path does not exist: " << filename;
+    throw std::runtime_error(ss.str());
+  }
     char   s[200];
     FILE* out = fopen(filename.c_str(), "w");
     FILE* in = fopen(prev_filename.c_str(), "r");
