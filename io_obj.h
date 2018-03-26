@@ -91,46 +91,41 @@ write_obj_replaceverts(const std::string& prev_filename,
     throw std::runtime_error(ss.str());
   }
 
-  if (!exists(filename)) {
-    std::stringstream ss;
-    ss << "Path does not exist: " << filename;
-    throw std::runtime_error(ss.str());
+  char   s[200];
+  FILE* out = fopen(filename.c_str(), "w");
+  FILE* in = fopen(prev_filename.c_str(), "r");
+  if (!in || !out) {
+    return false;
   }
-    char   s[200];
-    FILE* out = fopen(filename.c_str(), "w");
-    FILE* in = fopen(prev_filename.c_str(), "r");
-    if (!in || !out) {
-      return false;
-    }
 
-    // clear line once
-    memset(s, 0, 200);
+  // clear line once
+  memset(s, 0, 200);
 
-    //--- Second pass, fills in
-    int curr_vertex=0;
-    while (in && !feof(in) && fgets(s, 200, in)) {
-        // vertex
-        if (curr_vertex > vertices.cols()) {
-          auto msg = "write_obj_replaceverts(Trying to access a "
-                       "value outside vertices)";
-          throw std::runtime_error(msg);
-        }
+  //--- Second pass, fills in
+  int curr_vertex=0;
+  while (in && !feof(in) && fgets(s, 200, in)) {
+      // vertex
+      if (curr_vertex > vertices.cols()) {
+        auto msg = "write_obj_replaceverts(Trying to access a "
+                     "value outside vertices)";
+        throw std::runtime_error(msg);
+      }
 
-        if (!isspace(s[0]) && strncmp(s, "v ", 2) == 0) {
-          fprintf(out, "v %f %f %f\n", vertices(0,curr_vertex),
-                                       vertices(1,curr_vertex),
-                                       vertices(2,curr_vertex));
-          curr_vertex++;
-        }
-        else {
-            fprintf(out, "%s", s);
-        }
+      if (!isspace(s[0]) && strncmp(s, "v ", 2) == 0) {
+        fprintf(out, "v %f %f %f\n", vertices(0,curr_vertex),
+                                     vertices(1,curr_vertex),
+                                     vertices(2,curr_vertex));
+        curr_vertex++;
+      }
+      else {
+          fprintf(out, "%s", s);
+      }
 
-        // clear line
-        memset(s, 0, 200);
-    }
+      // clear line
+      memset(s, 0, 200);
+  }
 
-    fclose(in);
-    fclose(out);
-    return true;
+  fclose(in);
+  fclose(out);
+  return true;
 }
