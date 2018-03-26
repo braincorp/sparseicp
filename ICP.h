@@ -494,8 +494,12 @@ namespace ICP {
                 double stop1 = (X-Xo1).colwise().norm().maxCoeff();
                 Xo1 = X;
                 if(stop1 < par.stop) {
-                  std::cerr << "Reached Stop Condition: " << stop1 << std::endl;
+                  //std::cerr << "Reached Stop Condition: " << stop1 << std::endl;
                   break;
+                }
+                if (outer % 1000 == 0) {
+                  std::cerr << std::scientific << "Current error 1: " << stop1
+                            << std::dec << std::endl;
                 }
             }
             /// Stopping criteria
@@ -504,6 +508,10 @@ namespace ICP {
             if(stop2 < par.stop) {
               std::cerr << "Reached Stop Condition: " << stop2 << std::endl;
               break;
+            }
+            if (icp % 100 == 0) {
+              std::cerr << std::scientific << "Current error 2: " << stop2
+                        << std::dec << std::endl;
             }
         }
     }
