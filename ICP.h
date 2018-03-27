@@ -20,6 +20,60 @@
 #include <nanoflann.hpp>
 #include <Eigen/Dense>
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace brain {
+
+class MaxIterException: public std::exception
+{
+ public:
+  /**
+   * Constructor
+   * @param message C-style string error message.
+   *                  The string contents are copied upon construction.
+   *                  Hence, responsibility for deleting the char* lies
+   *                  with the caller.
+   */
+  explicit
+  MaxIterException(const char* message):
+  msg_(message)
+  { }
+
+  /**
+   * Constructor
+   *  @param message The error message.
+   */
+  explicit
+  MaxIterException(const std::string& message):
+  msg_(message) {}
+
+  /**
+   * Destructor.
+   * Virtual to allow for subclassing.
+   */
+  virtual
+  ~MaxIterException() throw () {}
+
+  /** Returns a pointer to the (constant) error description.
+   *  @return A pointer to a const char*. The underlying memory
+   *          is in posession of the MaxIterException object. Callers must
+   *          not attempt to free the memory.
+   */
+  virtual const char*
+  what() const throw ()
+  {
+     return msg_.c_str();
+  }
+
+ protected:
+  /**
+   * Error message.
+   */
+  std::string msg_;
+};
+
+}
+
+
 namespace nanoflann {
     /// KD-tree adaptor for working with data directly stored in an Eigen Matrix, without duplicating the data storage.
     /// This code is adapted from the KDTreeEigenMatrixAdaptor class of nanoflann.hpp
@@ -303,6 +357,9 @@ namespace SICP {
             if(stop < par.stop) {
               std::cerr << "Reached Stop Condition: " << stop << std::endl;
               break;
+            }
+            if (icp == par.max_icp) {
+              throw brain::MaxIterException("point_to_point: Hit max iterations");
             }
         }
     }
