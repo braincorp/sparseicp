@@ -525,6 +525,7 @@ namespace ICP {
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
                         Eigen::Matrix3Xd& Y,
+                        std::function<void(std::string, int)> progress_func,
                         Parameters par = Parameters()) {
         /// Build kd-tree
         nanoflann::KDTreeAdaptor<Eigen::Matrix3Xd, 3, nanoflann::metric_L2_Simple> kdtree(Y);
@@ -555,8 +556,14 @@ namespace ICP {
                   break;
                 }
                 if (outer % 1000 == 0) {
-                  std::cerr << std::scientific << "Current error 1: " << stop1
-                            << std::dec << std::endl;
+                  // Give back the current error as a string because it's way
+                  // more useful to see the scientific notation.  As a float
+                  // pretty much looks like zero in Python.
+                  std::stringstream ss;
+                  ss << std::scientific << stop1 << std::dec;
+                  progress_func(
+                    ss.str(),
+                    (static_cast<double>(icp) / static_cast<double>(par.max_icp)) * 100);
                 }
             }
             /// Stopping criteria
@@ -566,11 +573,11 @@ namespace ICP {
               std::cerr << "Reached Stop Condition: " << stop2 << std::endl;
               break;
             }
-            if (icp % 100 == 0) {
-              std::cerr << std::scientific << "Current error 2: " << stop2
-                        << std::dec << std::endl;
+            if (icp == par.max_icp) {
+              throw brain::MaxIterException("point_to_point: Hit max iterations");
             }
         }
+        progress_func("Done", 100);
     }
     /// Reweighted ICP with point to plane
     /// @param Source (one 3D point per column)
