@@ -524,7 +524,7 @@ namespace ICP {
     /// @param Target (one 3D point per column)
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
-                        Eigen::Matrix3Xd& Y,
+                        const Eigen::Matrix3Xd& Y,
                         std::function<void(std::string, int)> progress_func,
                         Parameters par = Parameters()) {
         /// Build kd-tree
