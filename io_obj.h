@@ -106,15 +106,17 @@ write_obj_replaceverts(const std::string& prev_filename,
   while (in && !feof(in) && fgets(s, 200, in)) {
       // vertex
       if (curr_vertex > vertices.cols()) {
-        auto msg = "write_obj_replaceverts(Trying to access a "
-                     "value outside vertices)";
-        throw std::runtime_error(msg);
+        //auto msg = "write_obj_replaceverts(Trying to access a "
+        //             "value outside vertices)";
+        //throw std::runtime_error(msg);
+        fprintf(out, "v %f %f %f\n", 0.0, 0.0, 0.0);
       }
-
-      if (!isspace(s[0]) && strncmp(s, "v ", 2) == 0) {
-        fprintf(out, "v %f %f %f\n", vertices(0,curr_vertex),
-                                     vertices(1,curr_vertex),
-                                     vertices(2,curr_vertex));
+      else if (!isspace(s[0]) && strncmp(s, "v ", 2) == 0) {
+        if (curr_vertex < vertices.cols()) {
+          fprintf(out, "v %f %f %f\n", vertices(0, curr_vertex),
+                                       vertices(1, curr_vertex),
+                                       vertices(2, curr_vertex));
+        }
         curr_vertex++;
       }
       else {
