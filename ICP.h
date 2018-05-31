@@ -555,6 +555,7 @@ namespace ICP {
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
                         std::function<void(std::string, int)> progress_func,
+                        const bool& sentinel,
                         Parameters par = Parameters()) {
         /// Build kd-tree
         nanoflann::KDTreeAdaptor<Eigen::Matrix3Xd, 3, nanoflann::metric_L2_Simple> kdtree(Y);
@@ -572,6 +573,9 @@ namespace ICP {
             }
             /// Computer rotation and translation
             for(int outer=0; outer<par.max_outer; ++outer) {
+                if (!sentinel) {
+                  return;
+                }
                 /// Compute weights
                 W = (X-Q).colwise().norm();
                 robust_weight(par.f, W, par.p);
