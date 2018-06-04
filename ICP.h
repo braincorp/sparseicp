@@ -301,13 +301,15 @@ namespace SICP {
     /// Sparse ICP with point to point
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
+    /// @param progress_func Called by this back to the caller of this function.
     /// @param Parameters
-    template <typename Derived1, typename Derived2>
-    void point_to_point(Eigen::MatrixBase<Derived1>& X,
-                        Eigen::MatrixBase<Derived2>& Y,
+    void point_to_point(Eigen::Matrix3Xd& X,
+                        const Eigen::Matrix3Xd& Y,
+                        std::function<void(std::string, int)> progress_func,
                         Parameters par = Parameters()) {
+
         /// Build kd-tree
-        nanoflann::KDTreeAdaptor<Eigen::MatrixBase<Derived2>, 3, nanoflann::metric_L2_Simple> kdtree(Y);
+        nanoflann::KDTreeAdaptor<Eigen::Matrix3Xd, 3, nanoflann::metric_L2_Simple> kdtree(Y);
         /// Buffers
         Eigen::Matrix3Xd Q = Eigen::Matrix3Xd::Zero(3, X.cols());
         Eigen::Matrix3Xd Z = Eigen::Matrix3Xd::Zero(3, X.cols());
@@ -315,7 +317,7 @@ namespace SICP {
         Eigen::Matrix3Xd Xo1 = X;
         Eigen::Matrix3Xd Xo2 = X;
         /// ICP
-        for(int icp=0; icp<par.max_icp; ++icp) {
+        for(int icp=0; icp <= par.max_icp; ++icp) {
             if(par.print_icpn) std::cout << "Iteration #" << icp << "/" << par.max_icp << std::endl;
             /// Find closest point
             #pragma omp parallel for
@@ -336,9 +338,22 @@ namespace SICP {
                     /// Stopping criteria
                     dual = (X-Xo1).colwise().norm().maxCoeff();
                     Xo1 = X;
+                    if (outer * inner * icp % 100 == 0) {
+                      // Give back the current error as a string because it's way
+                      // more useful to see the scientific notation.  As a float
+                      // pretty much looks like zero in Python.
+                      std::stringstream ss;
+                      ss << std::scientific << dual << std::dec;
+                      progress_func(ss.str(),
+                                    (static_cast<double>(icp) /
+                                       static_cast<double>(par.max_icp)) * 100);
+                    }
                     if (dual < par.stop) {
-                      std::cerr << "Reached Stop Condition: "
-                                << dual << std::endl;
+                      std::stringstream ss;
+                      ss << std::scientific << dual << std::dec;
+                      progress_func(ss.str(),
+                                    (static_cast<double>(icp) /
+                                       static_cast<double>(par.max_icp)) * 100);
                       break;
                     }
                 }
@@ -349,19 +364,37 @@ namespace SICP {
                 if(mu < par.max_mu) mu *= par.alpha;
                 /// Stopping criteria
                 double primal = P.colwise().norm().maxCoeff();
-                if(primal < par.stop && dual < par.stop) break;
+                if(primal < par.stop && dual < par.stop) {
+                  std::stringstream ss;
+                  ss << std::scientific << dual << std::dec;
+                  progress_func(ss.str(),
+                                (static_cast<double>(icp) /
+                                   static_cast<double>(par.max_icp)) * 100);
+                  break;
+                }
             }
             /// Stopping criteria
             double stop = (X-Xo2).colwise().norm().maxCoeff();
             Xo2 = X;
+            if (true) {
+              // Give back the current error as a string because it's way
+              // more useful to see the scientific notation.  As a float
+              // pretty much looks like zero in Python.
+              std::stringstream ss;
+              ss << std::scientific << stop << std::dec;
+              progress_func(ss.str(),
+                            (static_cast<double>(icp) /
+                               static_cast<double>(par.max_icp)) * 100);
+            }
             if(stop < par.stop) {
-              std::cerr << "Reached Stop Condition: " << stop << std::endl;
+              progress_func("Done", 100);
               break;
             }
             if (icp == par.max_icp) {
               throw brain::MaxIterException("point_to_point: Hit max iterations");
             }
         }
+        progress_func("Done", 100);
     }
     /// Sparse ICP with point to plane
     /// @param Source (one 3D point per column)
@@ -522,6 +555,7 @@ namespace ICP {
     /// Reweighted ICP with point to point
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
+    /// @param progress_func Called by this back to the caller of this function.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
