@@ -376,16 +376,14 @@ namespace SICP {
             /// Stopping criteria
             double stop = (X-Xo2).colwise().norm().maxCoeff();
             Xo2 = X;
-            if (true) {
-              // Give back the current error as a string because it's way
-              // more useful to see the scientific notation.  As a float
-              // pretty much looks like zero in Python.
-              std::stringstream ss;
-              ss << std::scientific << stop << std::dec;
-              progress_func(ss.str(),
-                            (static_cast<double>(icp) /
-                               static_cast<double>(par.max_icp)) * 100);
-            }
+            // Give back the current error as a string because it's way
+            // more useful to see the scientific notation.  As a float
+            // pretty much looks like zero in Python.
+            std::stringstream ss;
+            ss << std::scientific << stop << std::dec;
+            progress_func(ss.str(),
+                          (static_cast<double>(icp) /
+                             static_cast<double>(par.max_icp)) * 100);
             if(stop < par.stop) {
               progress_func("Done", 100);
               break;
