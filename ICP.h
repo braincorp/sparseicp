@@ -317,7 +317,7 @@ namespace SICP {
         Eigen::Matrix3Xd Xo1 = X;
         Eigen::Matrix3Xd Xo2 = X;
         /// ICP
-        for(int icp=0; icp <= par.max_icp; ++icp) {
+        for(int icp=0; icp < par.max_icp; ++icp) {
             if(par.print_icpn) std::cout << "Iteration #" << icp << "/" << par.max_icp << std::endl;
             /// Find closest point
             #pragma omp parallel for
@@ -338,7 +338,7 @@ namespace SICP {
                     /// Stopping criteria
                     dual = (X-Xo1).colwise().norm().maxCoeff();
                     Xo1 = X;
-                    if (outer * inner * icp % 100 == 0) {
+                    if (outer * inner * icp % 1000 == 0) {
                       // Give back the current error as a string because it's way
                       // more useful to see the scientific notation.  As a float
                       // pretty much looks like zero in Python.
@@ -387,9 +387,6 @@ namespace SICP {
             if(stop < par.stop) {
               progress_func("Done", 100);
               break;
-            }
-            if (icp == par.max_icp) {
-              throw brain::MaxIterException("point_to_point: Hit max iterations");
             }
         }
         progress_func("Done", 100);
@@ -605,9 +602,9 @@ namespace ICP {
               std::cerr << "Reached Stop Condition: " << stop2 << std::endl;
               break;
             }
-            if (icp == par.max_icp) {
-              throw brain::MaxIterException("point_to_point: Hit max iterations");
-            }
+            //if (icp == par.max_icp) {
+            //  throw brain::MaxIterException("point_to_point: Hit max iterations");
+            //}
         }
         progress_func("Done", 100);
     }
