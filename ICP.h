@@ -302,6 +302,8 @@ namespace SICP {
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
     /// @param progress_func Called by this back to the caller of this function.
+    //  @param sentinel Reference to a bool that can be used to exit the loop 
+    //         in a threaded context.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
@@ -555,6 +557,8 @@ namespace ICP {
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
     /// @param progress_func Called by this back to the caller of this function.
+    //  @param sentinel Reference to a bool that can be used to exit the loop 
+    //         in a threaded context.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
