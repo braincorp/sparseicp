@@ -306,6 +306,7 @@ namespace SICP {
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
                         std::function<void(std::string, int)> progress_func,
+                        const bool& sentinel = true,
                         Parameters par = Parameters()) {
 
         /// Build kd-tree
@@ -327,6 +328,9 @@ namespace SICP {
             /// Computer rotation and translation
             double mu = par.mu;
             for(int outer=0; outer<par.max_outer; ++outer) {
+                if (!sentinel) {
+                  return;
+                }
                 double dual = 0.0;
                 for(int inner=0; inner<par.max_inner; ++inner) {
                     /// Z update (shrinkage)
@@ -555,7 +559,7 @@ namespace ICP {
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
                         std::function<void(std::string, int)> progress_func,
-                        const bool& sentinel,
+                        const bool& sentinel = true,
                         Parameters par = Parameters()) {
         /// Build kd-tree
         nanoflann::KDTreeAdaptor<Eigen::Matrix3Xd, 3, nanoflann::metric_L2_Simple> kdtree(Y);
