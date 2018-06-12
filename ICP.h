@@ -302,10 +302,13 @@ namespace SICP {
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
     /// @param progress_func Called by this back to the caller of this function.
+    //  @param sentinel Reference to a bool that can be used to exit the loop 
+    //         in a threaded context.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
                         std::function<void(std::string, int)> progress_func,
+                        const bool& sentinel = true,
                         Parameters par = Parameters()) {
 
         /// Build kd-tree
@@ -327,6 +330,9 @@ namespace SICP {
             /// Computer rotation and translation
             double mu = par.mu;
             for(int outer=0; outer<par.max_outer; ++outer) {
+                if (!sentinel) {
+                  return;
+                }
                 double dual = 0.0;
                 for(int inner=0; inner<par.max_inner; ++inner) {
                     /// Z update (shrinkage)
@@ -551,10 +557,13 @@ namespace ICP {
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
     /// @param progress_func Called by this back to the caller of this function.
+    //  @param sentinel Reference to a bool that can be used to exit the loop 
+    //         in a threaded context.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
                         const Eigen::Matrix3Xd& Y,
                         std::function<void(std::string, int)> progress_func,
+                        const bool& sentinel = true,
                         Parameters par = Parameters()) {
         /// Build kd-tree
         nanoflann::KDTreeAdaptor<Eigen::Matrix3Xd, 3, nanoflann::metric_L2_Simple> kdtree(Y);
@@ -572,6 +581,9 @@ namespace ICP {
             }
             /// Computer rotation and translation
             for(int outer=0; outer<par.max_outer; ++outer) {
+                if (!sentinel) {
+                  return;
+                }
                 /// Compute weights
                 W = (X-Q).colwise().norm();
                 robust_weight(par.f, W, par.p);
