@@ -14,8 +14,8 @@
 ///   namespace SICP: sparse ICP implementation
 ///   namespace ICP: reweighted ICP implementation
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef ICP_H
-#define ICP_H
+#ifndef SICP_H
+#define SICP_H
 #include <iostream>
 #include <nanoflann.hpp>
 #include <Eigen/Dense>
@@ -302,7 +302,7 @@ namespace SICP {
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
     /// @param progress_func Called by this back to the caller of this function.
-    //  @param sentinel Reference to a bool that can be used to exit the loop 
+    //  @param sentinel Reference to a bool that can be used to exit the loop
     //         in a threaded context.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
@@ -557,7 +557,7 @@ namespace ICP {
     /// @param Source (one 3D point per column)
     /// @param Target (one 3D point per column)
     /// @param progress_func Called by this back to the caller of this function.
-    //  @param sentinel Reference to a bool that can be used to exit the loop 
+    //  @param sentinel Reference to a bool that can be used to exit the loop
     //         in a threaded context.
     /// @param Parameters
     void point_to_point(Eigen::Matrix3Xd& X,
